@@ -288,8 +288,9 @@ let obs=null;
 function initObserver(){
   if(obs)obs.disconnect();
   const links=[...document.querySelectorAll("#nav a")];
-  obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const i=e.target.id.split("-")[1];
-    links.forEach(a=>{const on=a.dataset.i===i;const c=SECTIONS[on?i:0];a.style.background=on?ACCENT[SECTIONS[i]]:"transparent";a.style.borderColor=on?"transparent":"var(--line)";a.style.color=on?"#fff":"var(--muted)";});}});});},{rootMargin:"-45% 0px -50% 0px"});
+  function onIntersect(es){es.forEach(function(e){if(e.isIntersecting){var i=e.target.id.split("-")[1];
+    links.forEach(function(a){var on=a.dataset.i===i;a.style.background=on?ACCENT[SECTIONS[i]]:"transparent";a.style.borderColor=on?"transparent":"var(--line)";a.style.color=on?"#fff":"var(--muted)";});}});}
+  obs=new IntersectionObserver(onIntersect,{rootMargin:"-45% 0px -50% 0px"});
   SECTIONS.forEach((l,i)=>obs.observe(document.getElementById("sec-"+i)));
 }
 
