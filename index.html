@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI HOT 日报 · 2026年7月19日</title>
+<style>
+  :root{
+    --bg:#f6f7fb; --panel:#ffffff; --ink:#1f2330; --muted:#6b7280;
+    --line:#e8eaf0; --shadow:0 1px 2px rgba(16,24,40,.04),0 8px 24px rgba(16,24,40,.06);
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+
+  /* ===== Hero ===== */
+  .hero{
+    background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 48%,#0ea5e9 100%);
+    color:#fff; padding:40px 0 30px; position:relative; overflow:hidden;
+  }
+  .hero::after{content:"";position:absolute;inset:0;background:
+    radial-gradient(600px 200px at 85% -10%,rgba(255,255,255,.18),transparent),
+    radial-gradient(400px 200px at 10% 120%,rgba(255,255,255,.12),transparent);}
+  .hero .wrap{position:relative;z-index:1}
+  .eyebrow{font-size:13px;letter-spacing:.18em;text-transform:uppercase;opacity:.85;font-weight:600}
+  .hero h1{font-size:clamp(28px,5vw,44px);font-weight:800;margin:6px 0 4px;letter-spacing:-.5px}
+  .hero .meta{opacity:.92;font-size:14px;margin-top:6px}
+  .hero .meta b{font-weight:700}
+
+  .stats{display:grid;grid-template-columns:1.1fr repeat(5,1fr);gap:12px;margin-top:24px}
+  .stat{background:rgba(255,255,255,.14);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.22);
+    border-radius:14px;padding:14px 12px;text-align:center}
+  .stat .num{font-size:30px;font-weight:800;line-height:1}
+  .stat.total .num{font-size:40px}
+  .stat .lbl{font-size:12px;opacity:.9;margin-top:6px;line-height:1.35}
+  .stat .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}
+
+  /* ===== Sticky nav ===== */
+  .nav{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);box-shadow:0 2px 10px rgba(16,24,40,.04)}
+  .nav .wrap{display:flex;gap:8px;overflow-x:auto;padding:10px 20px;scrollbar-width:none}
+  .nav .wrap::-webkit-scrollbar{display:none}
+  .nav a{flex:0 0 auto;text-decoration:none;font-size:13px;font-weight:600;color:var(--muted);
+    padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:#fff;white-space:nowrap;transition:.15s}
+  .nav a:hover{color:var(--ink);border-color:#cbd2e0}
+  .nav a .c{display:inline-block;min-width:20px;text-align:center;margin-left:6px;font-size:11px;
+    background:#eef1f7;color:#475069;border-radius:999px;padding:0 6px}
+  .nav a.active{color:#fff;border-color:transparent}
+
+  /* ===== Sections ===== */
+  section.block{padding:34px 0 8px;scroll-margin-top:64px}
+  .sec-head{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .sec-head .ic{font-size:24px}
+  .sec-head h2{font-size:21px;font-weight:800;letter-spacing:-.3px}
+  .sec-head .badge{margin-left:auto;font-size:13px;font-weight:700;color:#fff;border-radius:999px;padding:3px 12px}
+  .sec-head .rule{flex:1;height:1px;background:var(--line)}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px 18px 16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px;
+    position:relative;transition:transform .15s,box-shadow .15s}
+  .card:hover{transform:translateY(-3px);box-shadow:0 4px 10px rgba(16,24,40,.06),0 16px 36px rgba(16,24,40,.10)}
+  .card .top{display:flex;align-items:center;gap:10px}
+  .num{flex:0 0 auto;width:30px;height:30px;border-radius:9px;color:#fff;font-weight:800;font-size:14px;
+    display:flex;align-items:center;justify-content:center}
+  .chip{font-size:12px;font-weight:600;color:#475069;background:#eef1f7;border-radius:999px;padding:3px 10px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .card h3{font-size:15.5px;font-weight:700;line-height:1.45}
+  .card p{font-size:13.5px;color:#475069;line-height:1.6}
+  .card .go{margin-top:auto;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;
+    text-decoration:none;align-self:flex-start;padding:7px 13px;border-radius:10px;background:#f3f4f8;transition:.15s}
+  .card .go:hover{filter:brightness(.97)}
+  .empty{grid-column:1/-1;background:#fff;border:1px dashed var(--line);border-radius:var(--radius);
+    padding:28px;text-align:center;color:var(--muted);font-size:14px}
+
+  /* ===== Footer ===== */
+  footer{margin-top:36px;padding:26px 0 40px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:space-between}
+  .totpill{font-weight:800;color:var(--ink)}
+
+  /* ===== Back to top ===== */
+  #top{position:fixed;right:20px;bottom:22px;width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;
+    background:#4f46e5;color:#fff;font-size:20px;box-shadow:0 8px 22px rgba(79,70,229,.4);opacity:0;
+    pointer-events:none;transition:.2s;z-index:30}
+  #top.show{opacity:1;pointer-events:auto}
+
+  @media(max-width:760px){
+    .stats{grid-template-columns:repeat(3,1fr)}
+    .stat.total{grid-column:1/-1}
+    .hero{padding:30px 0 24px}
+  }
+</style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow">AI HOT · 每日 AI 晨报</div>
+      <h1>2026年7月19日 星期日</h1>
+      <div class="meta">数据窗口：<b>7月18日 08:00 — 7月19日 08:00（北京时间）</b> · 生成于 <b>2026年7月19日 08:00（北京时间）</b></div>
+      <div class="stats" id="stats"></div>
+    </div>
+  </header>
+
+  <nav class="nav"><div class="wrap" id="nav"></div></nav>
+
+  <main class="wrap" id="main"></main>
+
+  <footer>
+    <div class="wrap">
+      <span>本日报共 <span class="totpill" id="footTotal"></span> 条 · 数据源：<span id="footSrc"></span></span>
+      <span>由 AI HOT 公开接口生成 · 摘要由 AI 生成，点击卡片可跳转原文核对</span>
+    </div>
+  </footer>
+
+  <button id="top" title="返回顶部">↑</button>
+
+<script>
+const DATA = {"date": "2026-07-19", "dateCn": "2026年7月19日", "weekday": "星期日", "total": 2, "window": "7月18日 08:00 — 7月19日 08:00（北京时间）", "generated": "2026年7月19日 08:00（北京时间）", "sections": [{"label": "模型发布/更新", "accent": "#4f46e5", "icon": "🧠", "count": 0, "items": []}, {"label": "产品发布/更新", "accent": "#059669", "icon": "🚀", "count": 1, "items": [{"title": "Claude Code v2.1.214 发布：修复权限绕过、添加 EndConversation 工具与多项 Bash 权限检查改进", "summary": "Claude Code v2.1.214 修复了 Windows PowerShell 5.1 中的权限检查绕过漏洞，…", "source": "Claude Code：GitHub Releases", "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.214", "n": 1}]}, {"label": "行业动态", "accent": "#d97706", "icon": "🌐", "count": 0, "items": []}, {"label": "论文研究", "accent": "#e11d48", "icon": "📄", "count": 0, "items": []}, {"label": "技巧与观点", "accent": "#0284c7", "icon": "💡", "count": 1, "items": [{"title": "Index Ventures 联合创始人 Neil Rimer 认为 AI 财富将面临“再分配”", "summary": "Index Ventures 联合创始人 Neil Rimer 表示，围绕 AI 积累的巨额财富将面临“某种形式的再分…", "source": "TechCrunch：AI", "url": "https://techcrunch.com/2026/07/17/neil-rimer-thinks-the-ai-money-is-coming-back-out", "n": 2}]}], "source": "aihot.virxact.com"};
+
+const esc = s => (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+// ---- Stats ----
+const statsEl = document.getElementById("stats");
+let statsHtml = `<div class="stat total"><div class="num">${DATA.total}</div><div class="lbl">今日总条数</div></div>`;
+DATA.sections.forEach(s=>{
+  statsHtml += `<div class="stat"><div class="num" style="color:${s.accent}">${s.count}</div>`
+    + `<div class="lbl"><span class="dot" style="background:${s.accent}"></span>${esc(s.label)}</div></div>`;
+});
+statsEl.innerHTML = statsHtml;
+
+// ---- Nav ----
+const navEl = document.getElementById("nav");
+let navHtml = "";
+DATA.sections.forEach((s,i)=>{
+  const activeBg = i===0 ? s.accent : "transparent";
+  const activeColor = i===0 ? "#fff" : "var(--muted)";
+  navHtml += `<a href="#sec-${i}" data-i="${i}" style="${i===0?'background:'+s.accent+';border-color:transparent;color:#fff':''}">`
+    + `${esc(s.icon)} ${esc(s.label)}<span class="c">${s.count}</span></a>`;
+});
+navEl.innerHTML = navHtml;
+
+// ---- Body ----
+const mainEl = document.getElementById("main");
+let bodyHtml = "";
+DATA.sections.forEach((s,i)=>{
+  const accent = s.accent;
+  let cards = "";
+  if(s.items.length===0){
+    cards = `<div class="empty">本版块今日暂无条目</div>`;
+  } else {
+    cards = `<div class="grid">`;
+    s.items.forEach(it=>{
+      cards += `<article class="card">`
+        + `<div class="top">`
+        + `<span class="num" style="background:${accent}">${it.n}</span>`
+        + `<span class="chip" title="${esc(it.source)}">${esc(it.source)}</span>`
+        + `</div>`
+        + `<h3>${esc(it.title)}</h3>`
+        + `<p>${esc(it.summary)}</p>`
+        + `<a class="go" style="color:${accent}" href="${esc(it.url)}" target="_blank" rel="noopener noreferrer">阅读原文 →</a>`
+        + `</article>`;
+    });
+    cards += `</div>`;
+  }
+  bodyHtml += `<section class="block" id="sec-${i}">`
+    + `<div class="sec-head">`
+    + `<span class="ic">${esc(s.icon)}</span>`
+    + `<h2>${esc(s.label)}</h2>`
+    + `<span class="rule"></span>`
+    + `<span class="badge" style="background:${accent}">${s.count} 条</span>`
+    + `</div>${cards}</section>`;
+});
+mainEl.innerHTML = bodyHtml;
+
+// ---- Footer ----
+document.getElementById("footTotal").textContent = DATA.total;
+document.getElementById("footSrc").textContent = DATA.source;
+
+// ---- Active nav on scroll ----
+const navLinks = [...navEl.querySelectorAll("a")];
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const i = e.target.id.split("-")[1];
+      navLinks.forEach(a=>{
+        const on = a.dataset.i===i;
+        a.style.background = on ? DATA.sections[i].accent : "transparent";
+        a.style.borderColor = on ? "transparent" : "var(--line)";
+        a.style.color = on ? "#fff" : "var(--muted)";
+      });
+    }
+  });
+},{rootMargin:"-45% 0px -50% 0px"});
+DATA.sections.forEach((s,i)=>obs.observe(document.getElementById("sec-"+i)));
+
+// ---- Back to top ----
+const topBtn = document.getElementById("top");
+window.addEventListener("scroll",()=>{
+  topBtn.classList.toggle("show", window.scrollY>400);
+});
+topBtn.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}));
+</script>
+</body>
+</html>
