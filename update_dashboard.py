@@ -488,6 +488,17 @@ def _dedupe(seq):
     return [x for x in seq if not (x in seen or seen.add(x))]
 
 
+def _dedupe_items(seq):
+    seen = set()
+    out = []
+    for it in seq:
+        t = it.get("t") if isinstance(it, dict) else it
+        if t and t not in seen:
+            seen.add(t)
+            out.append(it)
+    return out
+
+
 def _daily(today, db):
     ds = sorted(db["days"].keys())[-2:]
     secs = {s: [] for s in SECTION_ORDER}
@@ -495,9 +506,9 @@ def _daily(today, db):
         for s in SECTION_ORDER:
             for it in db["days"][d].get("s", {}).get(s, []):
                 if it.get("t"):
-                    secs[s].append(it["t"])
+                    secs[s].append(it)
     for s in secs:
-        secs[s] = _dedupe(secs[s])[:6]
+        secs[s] = _dedupe_items(secs[s])[:6]
     label = (ds[0] + " ~ " + ds[-1]) if ds else today.isoformat()
     return {"type": "daily", "name": "晨报", "header": "今日看点", "date_label": label, "secs": secs}
 
@@ -510,9 +521,9 @@ def _weekly(today, db):
         for s in SECTION_ORDER:
             for it in db["days"][d].get("s", {}).get(s, []):
                 if it.get("t"):
-                    agg[s].append(it["t"])
+                    agg[s].append(it)
     for s in agg:
-        agg[s] = _dedupe(agg[s])[:6]
+        agg[s] = _dedupe_items(agg[s])[:6]
     label = (ds[0] + " ~ " + ds[-1]) if ds else ""
     return {"type": "weekly", "name": "周报", "header": "上周看点", "date_label": label, "secs": agg}
 
@@ -525,9 +536,9 @@ def _monthly(today, db):
         for s in SECTION_ORDER:
             for it in db["days"][d].get("s", {}).get(s, []):
                 if it.get("t"):
-                    agg[s].append(it["t"])
+                    agg[s].append(it)
     for s in agg:
-        agg[s] = _dedupe(agg[s])[:6]
+        agg[s] = _dedupe_items(agg[s])[:6]
     return {"type": "monthly", "name": "月报", "header": "上月看点", "date_label": ym, "secs": agg}
 
 
@@ -544,26 +555,106 @@ def esc_html(s):
     return (s or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-def build_mail_html(name, report):
-    LINK = "https://3529083364chatgpt-debug.github.io/ai-hot-daily/"
-    sec_html = ""
-    for sec in SECTION_ORDER:
-        items = report["secs"].get(sec, [])
+CIRCLED = ["&#9312;", "&#9313;", "&#9314;", "&#9315;", "&#9316;", "&#9317;", "&#9318;", "&#9319;"]
+
+
+def _wabi_sections_html(report):
+    out = []
+    secs = report.get("secs", {}) or {}
+    for i, sec in enumerate(SECTION_ORDER):
+        items = secs.get(sec, []) or []
         if not items:
             continue
-        lines = "".join("· " + esc_html(t) + "<br>" for t in items)
-        sec_html += ('<p style="margin:0 0 10px;"><strong style="color:#374151;">'
-                     + esc_html(sec) + "</strong><br>" + lines + "</p>")
-    subj_kind = {"daily": "今天的 AI 热点晨报", "weekly": "上周的 AI 周报",
-                 "monthly": "上月的 AI 月报"}[report["type"]]
-    return ('<p style="font-size:15px;line-height:1.7;color:#222;">' + esc_html(name)
-            + "早上好，" + subj_kind + "来啦，请您查收。</p>\n"
-            '<p><a href="' + LINK + '" style="color:#2563eb;font-size:15px;font-weight:600;">'
-            "👉 点击查看：AI HOT 晨报仪表盘</a></p>\n"
-            '<p style="margin:14px 0 6px;font-size:14px;font-weight:700;color:#111;">📌 '
-            + esc_html(report["header"]) + "（" + esc_html(report["date_label"]) + "）</p>\n"
-            + sec_html
-            + '<p style="font-size:13px;color:#888;margin-top:14px;">用浏览器打开上方蓝色链接即可查看当日及历史日报，支持日报 / 周报 / 月报切换。</p>')
+        num = CIRCLED[i] if i < len(CIRCLED) else str(i + 1)
+        out.append('        <!-- SECTION %d -->' % (i + 1))
+        out.append('        <tr>')
+        out.append('          <td class="section-cell">')
+        out.append('            <table class="section-header-table" width="100%" cellpadding="0" cellspacing="0" border="0">')
+        out.append('              <tr><td class="section-num">%s %s</td></tr>' % (num, esc_html(sec)))
+        out.append('              <tr><td class="section-divider"></td></tr>')
+        out.append('            </table>')
+        out.append('          </td>')
+        out.append('        </tr>')
+        out.append('        <tr>')
+        out.append('          <td class="news-cell">')
+        out.append('            <table class="news-table" width="100%" cellpadding="0" cellspacing="0" border="0">')
+        for j, it in enumerate(items):
+            pad = 'news-item-padding' if j % 2 == 0 else 'news-item-padding-alt'
+            title = esc_html(it.get("t", ""))
+            desc = esc_html(it.get("s", ""))
+            src = esc_html(it.get("src", "") or "来源")
+            url = esc_html(it.get("u", "#"))
+            out.append('              <tr>')
+            out.append('                <td class="%s">' % pad)
+            out.append('                  <table width="100%" cellpadding="0" cellspacing="0" border="0">')
+            out.append('                    <tr>')
+            out.append('                      <td width="36" valign="top" style="padding-top:2px;"><div class="news-badge">%d</div></td>' % (j + 1))
+            out.append('                      <td valign="top">')
+            out.append('                        <div class="news-title"><a href="%s" target="_blank" style="color:inherit;text-decoration:none;">%s</a></div>' % (url, title))
+            if desc:
+                out.append('                        <div class="news-desc">%s</div>' % desc)
+            out.append('                        <div class="news-desc" style="color:#9B8B7D;font-size:11px;margin-top:5px;">来源：%s</div>' % src)
+            out.append('                      </td>')
+            out.append('                    </tr>')
+            out.append('                  </table>')
+            out.append('                </td>')
+            out.append('              </tr>')
+            if j != len(items) - 1:
+                out.append('              <tr><td class="news-separator"></td></tr>')
+        out.append('            </table>')
+        out.append('          </td>')
+        out.append('        </tr>')
+    return "\n".join(out)
+
+
+def _load_email_template():
+    p = os.path.join(HERE, "email_template.html")
+    if os.path.exists(p):
+        try:
+            return open(p, encoding="utf-8").read()
+        except Exception:
+            return None
+    return None
+
+
+def build_mail_html(name, report):
+    LINK = "https://3529083364chatgpt-debug.github.io/ai-hot-daily/"
+    tmap = {
+        "daily":   ("AI 晨报", "Daily AI Industry Digest", "每日送达", "今天的", "今日热点", "AI 晨报"),
+        "weekly":  ("AI 周报", "Weekly AI Industry Digest", "每周一送达", "上周的", "本周热点回顾", "AI 周报"),
+        "monthly": ("AI 月报", "Monthly AI Industry Digest", "每月1日送达", "上月的", "本月热点回顾", "AI 月报"),
+    }
+    title, subtitle, freq, tw, dlabel, rlabel = tmap[report["type"]]
+    today_str = date.today().strftime("%Y-%m-%d")
+    greeting = "%s早上好，%s%s来啦，请您查收。" % (esc_html(name), tw, rlabel)
+    meta = "%s &middot; %s &middot; %s" % (esc_html(report.get("date_label", "")), today_str, freq)
+    datebar = ('<span class="leaf-icon">&#127807;</span>'
+               '<span class="date-bar-text">%s</span>'
+               '<span style="padding-left:16px;" class="date-bar-muted">%s</span>'
+               % (esc_html(report.get("date_label", "")), dlabel))
+    cta_text = "查看 AI HOT 晨报仪表盘"
+    sections = _wabi_sections_html(report)
+
+    tpl = _load_email_template()
+    if not tpl:
+        # 兜底：模板缺失时退化为简洁卡片，保证邮件仍能发出
+        return ('<div style="font-family:sans-serif;max-width:640px;margin:0 auto;'
+                'background:#FDFAF5;padding:30px;border-radius:10px;">'
+                '<h2 style="color:#4A3728;">%s</h2><p>%s</p>'
+                '<p><a href="%s">%s &rarr;</a></p>%s</div>'
+                % (esc_html(title), greeting, LINK, cta_text, sections))
+    return (tpl
+            .replace("{{TITLE_TAG}}", esc_html(title))
+            .replace("{{TITLE}}", esc_html(title))
+            .replace("{{SUBTITLE}}", esc_html(subtitle))
+            .replace("{{META}}", meta)
+            .replace("{{DATE_BAR}}", datebar)
+            .replace("{{GREETING}}", greeting)
+            .replace("{{CTA_LINK}}", LINK)
+            .replace("{{CTA_TEXT}}", cta_text)
+            .replace("{{SECTIONS}}", sections)
+            .replace("{{FOOTER_BRAND}}", esc_html(title))
+            .replace("{{FOOTER_DESC}}", "%s &middot; 精选 AI 行业动态" % freq))
 
 
 # 收件人配置：mode="std" 沿用原标题格式；mode="linjie" 使用个性化标题（林杰专属）
