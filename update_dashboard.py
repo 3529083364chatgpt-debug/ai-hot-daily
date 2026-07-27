@@ -566,7 +566,17 @@ def build_mail_html(name, report):
             + '<p style="font-size:13px;color:#888;margin-top:14px;">用浏览器打开上方蓝色链接即可查看当日及历史日报，支持日报 / 周报 / 月报切换。</p>')
 
 
-def send_mail(to_addr, name, report):
+# 收件人配置：mode="std" 沿用原标题格式；mode="linjie" 使用个性化标题（林杰专属）
+RECEIVERS = [
+    {"to": "3529083364@qq.com",     "name": "小陶", "mode": "std"},
+    {"to": "2750214411@qq.com",     "name": "永川", "mode": "std"},
+    {"to": "wanlinjie0913@163.com", "name": "林杰", "mode": "linjie"},
+]
+# 本报告在邮件中的称呼（林杰个性化标题使用）
+REPORT_LABEL = "AI 晨报"
+
+
+def send_mail(to_addr, name, report, mode="std"):
     import smtplib
     from email.mime.text import MIMEText
     user = os.environ.get("QQ_SMTP_USER")
@@ -574,10 +584,13 @@ def send_mail(to_addr, name, report):
     if not user or not auth:
         print("  [mail] skip: QQ_SMTP_USER / QQ_SMTP_AUTH not set")
         return False
-    type2subj = {"daily": "今天的AI热点晨报来啦，请您查收",
-                 "weekly": "这是上周的ai周报，请您查收",
-                 "monthly": "这是上月的ai月报，请您查收"}
-    subject = "【" + name + "早上好，" + type2subj[report["type"]] + "】"
+    if mode == "linjie":
+        subject = "林杰早上好鸭，这是今日的 " + REPORT_LABEL + "，请查收"
+    else:
+        type2subj = {"daily": "今天的AI热点晨报来啦，请您查收",
+                     "weekly": "这是上周的ai周报，请您查收",
+                     "monthly": "这是上月的ai月报，请您查收"}
+        subject = "【" + name + "早上好，" + type2subj[report["type"]] + "】"
     html = build_mail_html(name, report)
     msg = MIMEText(html, "html", "utf-8")
     msg["Subject"] = subject
@@ -596,10 +609,9 @@ def send_mail(to_addr, name, report):
 
 
 def send_all_reports(db):
-    receivers = [("3529083364@qq.com", "小陶"), ("2750214411@qq.com", "永川")]
-    for to, name in receivers:
+    for r in RECEIVERS:
         for report in make_report(date.today(), db):
-            send_mail(to, name, report)
+            send_mail(r["to"], r["name"], report, r.get("mode", "std"))
 
 
 def main():
